@@ -1,77 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
-#include <network.h>
-#include <MorphOSCConfig.h>
-#include <geometry.h>
+#include <multitouch.h>
 #include <sensel.h>
 #include <sensel_device.h>
-#include <multitouch.h>
 #include <tinyosc.h>
 #include <sys/socket.h>
 
-static const char* CONTACT_STATE_STRING[] = { "CONTACT_INVALID","CONTACT_START", "CONTACT_MOVE", "CONTACT_END" };
-static bool enter_pressed = false;
 
-void * waitForEnter() {
-    getchar();
-    enter_pressed = true;
-    return 0;
-}
-
-void error(const char *msg) {
-    perror(msg);
-    exit(0);
-}
-
-int main(int argc, char* argv[]) {
-  if (argc < 3) {
-    printf("Version %d.%d\n", MorphOSC_VERSION_MAJOR, MorphOSC_VERSION_MINOR);
-    printf("Usage: %s hostname port\n", argv[0]);
-    exit(1);
-  }
-
-  char * address = argv[1];
-  int port = atoi(argv[2]);
-  int sockfd = setup_network(address, port);
-
-  char oscbuffer[1024];
-
-	SENSEL_HANDLE handle = NULL;
-	//List of all available Sensel devices
-	SenselDeviceList list;
-	//SenselFrame data that will hold the contacts
-	SenselFrameData *frame = NULL;
-
-	//Get a list of available Sensel devices
-	senselGetDeviceList(&list);
-	if (list.num_devices == 0)
-	{
-		fprintf(stdout, "No device found\n");
-		fprintf(stdout, "Press Enter to exit example\n");
-		getchar();
-		return 0;
-	}
-
-	//Open a Sensel device by the id in the SenselDeviceList, handle initialized 
-	senselOpenDeviceByID(&handle, list.devices[0].idx);
-
-	//Set the frame content to scan contact data
-	senselSetFrameContent(handle, FRAME_CONTENT_CONTACTS_MASK);
-	//Allocate a frame of data, must be done before reading frame data
-	senselAllocateFrameData(handle, &frame);
-	//Start scanning the Sensel device
-  senselStartScanning(handle);
-  
-  fprintf(stdout, "Press Enter to exit example\n");
-
-  pthread_t thread;
-  pthread_create(&thread, NULL, waitForEnter, NULL);
-
-  int total_contacts = 0;
-  
-  while (!enter_pressed) {
+void scan_and_send(SenselFrameData * frame, SENSEL_HANDLE handle, int sockfd, char * oscbuffer, int total_contacts) {
     unsigned int num_frames = 0;
     int len;
     //Read all available data from the Sensel device
@@ -151,7 +85,4 @@ int main(int argc, char* argv[]) {
         }
       }
     }
-  }
-
-  return 0;
 }

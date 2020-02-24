@@ -13,8 +13,11 @@ add_executable(MorphOSC
                submodules/tinyosc/tinyosc.c
                )
 
+
 target_include_directories(MorphOSC PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${PROJECT_SOURCE_DIR}/src"
                            "${PROJECT_SOURCE_DIR}/submodules/tinyosc"
                            )
+
+target_link_libraries(MorphOSC sensel pthread m)
