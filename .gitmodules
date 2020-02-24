@@ -1,0 +1,6 @@
+[submodule "submodules/tinyosc"]
+	path = submodules/tinyosc
+	url = https://github.com/ctsexton/tinyosc.git
+[submodule "submodules/sensel-api"]
+	path = submodules/sensel-api
+	url = https://github.com/ctsexton/sensel-api.git
