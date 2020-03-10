@@ -1,0 +1,3 @@
+# Sensel rules
+SUBSYSTEM=="tty", ACTION=="add", ENV{ID_VENDOR_ID}=="2c2f", ENV{ID_MODEL_ID}="0003", MODE="0666", SYMLINK+="morph%n"
+SUBSYSTEM=="tty", ACTION=="add", ENV{ID_VENDOR_ID}=="2c2f", ENV{ID_MODEL_ID}="0005", MODE="0666", SYMLINK+="squirt%n"
